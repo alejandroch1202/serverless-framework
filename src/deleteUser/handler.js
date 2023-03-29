@@ -15,7 +15,6 @@ const dynamodb = new aws.DynamoDB.DocumentClient(config);
 
 const deleteUser = async (event, context) => {
   let id = event.pathParameters.id;
-  const body = JSON.parse(event.body);
 
   let params = {
     TableName: "usersTable",

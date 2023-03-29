@@ -17,8 +17,8 @@ plugins:
 package:
   individually: true
   patterns:
-    - "!.dynamodb"
-    - "!node_modules"
+    - "!*/**"
+    - "!**"
 
 functions:
   getUser:
@@ -27,34 +27,48 @@ functions:
       - http:
           path: users/{id}
           method: GET
+    package:
+      patterns:
+        - "src/getUser/handler.js"
   getUsers:
     handler: src/getUsers/handler.getUsers
     events:
       - http:
           path: users
           method: GET
+    package:
+      patterns:
+        - "src/getUsers/handler.js"
   createUser:
     handler: src/createUser/handler.createUser
     events:
       - http:
           path: users
           method: POST
+    package:
+      patterns:
+        - "src/createUser/handler.js"
   updateUser:
     handler: src/updateUser/handler.updateUser
     events:
       - http:
           path: users/{id}
           method: PATCH
+    package:
+      patterns:
+        - "src/updateUser/handler.js"
   deleteUser:
     handler: src/deleteUser/handler.deleteUser
     events:
       - http:
           path: users/{id}
           method: DELETE
+    package:
+      patterns:
+        - "src/deleteUser/handler.js"
 
 custom:
   dynamodb:
-    # If you only want to use DynamoDB Local in some stages, declare them here
     stages:
       - dev
     start:
@@ -62,14 +76,12 @@ custom:
       inMemory: true
       migrate: true
       seed: true
-      # Uncomment only if you already have a DynamoDB running locally
-      # noStart: true
-
+      # noStart: true     # Uncomment only if you already have a DynamoDB running locally
     seed:
       domain:
         sources:
           - table: usersTable
-            sources: [./src/db/usersTable.json]
+            sources: [./db/usersTable.json]
 
 resources:
   Resources:
