@@ -39,6 +39,18 @@ functions:
       - http:
           path: users
           method: POST
+  updateUser:
+    handler: src/updateUser/handler.updateUser
+    events:
+      - http:
+          path: users/{id}
+          method: PATCH
+  deleteUser:
+    handler: src/deleteUser/handler.deleteUser
+    events:
+      - http:
+          path: users/{id}
+          method: DELETE
 
 custom:
   dynamodb:

@@ -193,6 +193,9 @@ dist
 # Ignore build directory
 .serverless
 
+### Insomnia ###
+Insomnia.json
+
 ### Windows ###
 # Windows thumbnail cache files
 Thumbs.db
