@@ -13,13 +13,17 @@ if (process.env.IS_OFFLINE) {
 
 const dynamodb = new aws.DynamoDB.DocumentClient(config);
 
-const getUsers = async (event, context) => {
+const getUser = async (event, context) => {
+  let id = event.pathParameters.id;
+
   let params = {
+    ExpressionAttributeValues: { ":id": id },
+    KeyConditionExpression: "id = :id",
     TableName: "usersTable",
   };
 
   return dynamodb
-    .scan(params)
+    .query(params)
     .promise()
     .then((response) => {
       return {
@@ -30,5 +34,5 @@ const getUsers = async (event, context) => {
 };
 
 module.exports = {
-  getUsers,
+  getUser,
 };

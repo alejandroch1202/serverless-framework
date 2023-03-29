@@ -2,25 +2,43 @@ service: serverless-crud
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs14.x
   iam:
     role:
       statements:
         - Effect: "Allow"
           Action: "dynamodb:*"
-          Resource: "arn:XXXXXX/usersTable"
+          Resource: "arn:aws:dynamodb:us-east-1:934720402085:table/usersTable"
 
 plugins:
   - serverless-offline
   - serverless-dynamodb-local
 
+package:
+  individually: true
+  patterns:
+    - "!.dynamodb"
+    - "!node_modules"
+
 functions:
-  getUsers:
-    handler: src/getUsers/handler.getUsers
+  getUser:
+    handler: src/getUser/handler.getUser
     events:
       - http:
           path: users/{id}
           method: GET
+  getUsers:
+    handler: src/getUsers/handler.getUsers
+    events:
+      - http:
+          path: users
+          method: GET
+  createUser:
+    handler: src/createUser/handler.createUser
+    events:
+      - http:
+          path: users
+          method: POST
 
 custom:
   dynamodb:
