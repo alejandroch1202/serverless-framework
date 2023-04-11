@@ -101,6 +101,29 @@ functions:
     package:
       patterns:
         - "src/functions/signedUrl/handler.js"
+  thumbGenerator:
+    handler: src/functions/thumbGenerator/handler.thumbGenerator
+    layers:
+      - { Ref: BaseLambdaLayer }
+    events:
+      - s3:
+          bucket: serverless-framework-bucket-dev
+          event: s3:ObjectCreated:*
+          existing: true
+          rules:
+            - prefix: upload/
+
+    package:
+      patterns:
+        - "src/functions/thumbGenerator/handler.js"
+
+layers:
+  base:
+    name: "sharp-layer"
+    compatibleRuntimes:
+      - "nodejs14.x"
+    package:
+      artifact: nodejs.zip
 
 custom:
   dynamodb:
