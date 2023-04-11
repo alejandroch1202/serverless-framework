@@ -1,17 +1,19 @@
-	
 [
-    {
-      "id": "00a54d9e-cdd4-11ed-afa1-0242ac120002",
-      "name": "Alejandro"
-    },
+  {
+    "id": "00a54d9e-cdd4-11ed-afa1-0242ac120002",
+    "name": "Alejandro",
+    "age": 27
+  },
 
-    {
-      "id": "06dde3ec-cdd4-11ed-afa1-0242ac120002",
-      "name": "Miguel"
-    },
-    
-    {
-      "id": "0a5e03a8-cdd4-11ed-afa1-0242ac120002",
-      "name": "Gabriel"
-    }
-  ]
+  {
+    "id": "06dde3ec-cdd4-11ed-afa1-0242ac120002",
+    "name": "Miguel",
+    "age": 25
+  },
+
+  {
+    "id": "0a5e03a8-cdd4-11ed-afa1-0242ac120002",
+    "name": "Gabriel",
+    "age": 20
+  }
+]

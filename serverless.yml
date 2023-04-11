@@ -1,4 +1,4 @@
-service: serverless-crud
+service: serverless-framework
 
 provider:
   name: aws
@@ -9,6 +9,11 @@ provider:
         - Effect: "Allow"
           Action: "dynamodb:*"
           Resource: "arn:aws:dynamodb:us-east-1:934720402085:table/usersTable"
+        - Effect: "Allow"
+          Action: "s3:*"
+          Resource: "arn:aws:s3:::serverless-framework-bucket-dev/*"
+  environment:
+    BUCKET: serverless-framework-bucket-dev
 
 plugins:
   - serverless-offline
@@ -22,50 +27,80 @@ package:
 
 functions:
   getUser:
-    handler: src/getUser/handler.getUser
+    handler: src/functions/getUser/handler.getUser
     events:
       - http:
           path: users/{id}
           method: GET
+          request:
+            parameters:
+              paths:
+                id: true
     package:
       patterns:
-        - "src/getUser/handler.js"
+        - "src/functions/getUser/handler.js"
   getUsers:
-    handler: src/getUsers/handler.getUsers
+    handler: src/functions/getUsers/handler.getUsers
     events:
       - http:
           path: users
           method: GET
     package:
       patterns:
-        - "src/getUsers/handler.js"
+        - "src/functions/getUsers/handler.js"
   createUser:
-    handler: src/createUser/handler.createUser
+    handler: src/functions/createUser/handler.createUser
     events:
       - http:
           path: users
           method: POST
+          request:
+            schemas:
+              application/json: ${file(src/schemas/user.schema.json)}
     package:
       patterns:
-        - "src/createUser/handler.js"
+        - "src/functions/createUser/handler.js"
   updateUser:
-    handler: src/updateUser/handler.updateUser
+    handler: src/functions/updateUser/handler.updateUser
     events:
       - http:
           path: users/{id}
           method: PATCH
+          request:
+            parameters:
+              paths:
+                id: true
+            schemas:
+              application/json: ${file(src/schemas/user.schema.json)}
     package:
       patterns:
-        - "src/updateUser/handler.js"
+        - "src/functions/updateUser/handler.js"
   deleteUser:
-    handler: src/deleteUser/handler.deleteUser
+    handler: src/functions/deleteUser/handler.deleteUser
     events:
       - http:
           path: users/{id}
           method: DELETE
+          request:
+            parameters:
+              paths:
+                id: true
     package:
       patterns:
-        - "src/deleteUser/handler.js"
+        - "src/functions/deleteUser/handler.js"
+  signedUrl:
+    handler: src/functions/signedUrl/handler.signedUrl
+    events:
+      - http:
+          path: signedurl/
+          method: GET
+          request:
+            parameters:
+              querystrings:
+                filename: true
+    package:
+      patterns:
+        - "src/functions/signedUrl/handler.js"
 
 custom:
   dynamodb:
@@ -85,7 +120,7 @@ custom:
 
 resources:
   Resources:
-    usersTable:
+    DynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: usersTable
@@ -98,3 +133,26 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+    S3Bucket:
+      Type: "AWS::S3::Bucket"
+      Properties:
+        AccessControl: PublicRead
+        BucketName: serverless-framework-bucket-dev
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref S3Bucket
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Action:
+                - "s3:GetObject"
+              Effect: Allow
+              Resource: !Join
+                - ""
+                - - "arn:aws:s3:::"
+                  - !Ref S3Bucket
+                  - /*
+              Principal: "*"
