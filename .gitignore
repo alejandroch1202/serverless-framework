@@ -3,6 +3,7 @@
 
 ### Linux ###
 *~
+
 # temporary files which can be created if a process still has a handle open of a deleted file
 .fuse_hidden*
 
@@ -23,6 +24,7 @@
 
 # Icon must end with two \r
 Icon
+
 
 # Thumbnails
 ._*
@@ -193,7 +195,6 @@ dist
 
 ### Insomnia ###
 Insomnia.json
-docs/code
 
 ### Windows ###
 # Windows thumbnail cache files
