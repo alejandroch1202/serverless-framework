@@ -3,6 +3,9 @@ service: serverless-framework
 provider:
   name: aws
   runtime: nodejs14.x
+  apiGateway:
+    apiKeys:
+      - serverless-framework-apikey
   iam:
     role:
       statements:
@@ -14,11 +17,12 @@ provider:
           Resource: "arn:aws:s3:::serverless-framework-bucket-dev/*"
   environment:
     BUCKET: serverless-framework-bucket-dev
+    SECRET: ${ssm:/MY_SECRET}
 
 plugins:
   - serverless-offline
   - serverless-dynamodb-local
-
+  - serverless-apigateway-service-proxy
 package:
   individually: true
   patterns:
@@ -52,6 +56,7 @@ functions:
     handler: src/functions/createUser/handler.createUser
     events:
       - http:
+          private: true
           path: users
           method: POST
           request:
@@ -64,6 +69,7 @@ functions:
     handler: src/functions/updateUser/handler.updateUser
     events:
       - http:
+          private: true
           path: users/{id}
           method: PATCH
           request:
@@ -79,6 +85,7 @@ functions:
     handler: src/functions/deleteUser/handler.deleteUser
     events:
       - http:
+          private: true
           path: users/{id}
           method: DELETE
           request:
@@ -140,7 +147,23 @@ custom:
         sources:
           - table: usersTable
             sources: [./db/usersTable.json]
-
+  apiGatewayServiceProxies:
+    - sqs:
+        path: /queue
+        method: post
+        queueName: !GetAtt MyQueue.QueueName
+        cors: true
+        response:
+          template:
+            # `success` is used when the integration response is 200
+            success: |-
+              { "message: "accepted" }
+            # `clientError` is used when the integration response is 400
+            clientError: |-
+              { "message": "there is an error in your request" }
+            # `serverError` is used when the integration response is 500
+            serverError: |-
+              { "message": "there was an error handling your request" }
 resources:
   Resources:
     DynamoDbTable:
